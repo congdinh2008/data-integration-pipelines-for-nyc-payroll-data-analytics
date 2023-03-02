@@ -1,0 +1,17 @@
+{
+	"name": "Check_All_Tables_After_Pipeline",
+	"properties": {
+		"content": {
+			"query": "SELECT 'NYC_Payroll_AGENCY_MD' TableName, COUNT(*) TotalRecords FROM dbo.[NYC_Payroll_AGENCY_MD]\nUNION\nSELECT 'NYC_Payroll_Data' TableName, COUNT(*) TotalRecords FROM dbo.[NYC_Payroll_Data]\nUNION\nSELECT 'NYC_Payroll_EMP_MD' TableName, COUNT(*) TotalRecords FROM dbo.[NYC_Payroll_EMP_MD]\nUNION\nSELECT 'NYC_Payroll_TITLE_MD' TableName, COUNT(*) TotalRecords FROM dbo.[NYC_Payroll_TITLE_MD]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "udacityproject4pool",
+				"poolName": "udacityproject4pool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"name": "Check_NYC_Payroll_Summary",
+	"properties": {
+		"content": {
+			"query": "SELECT * FROM dbo.[NYC_Payroll_Summary]\n\n-- Delete data to test another param\n-- DELETE FROM dbo.[NYC_Payroll_Summary]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "udacityproject4pool",
+				"poolName": "udacityproject4pool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

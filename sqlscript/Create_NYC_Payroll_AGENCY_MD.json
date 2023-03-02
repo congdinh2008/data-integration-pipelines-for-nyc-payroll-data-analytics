@@ -1,0 +1,17 @@
+{
+	"name": "Create_NYC_Payroll_AGENCY_MD",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[NYC_Payroll_AGENCY_MD](\n    [AgencyID] [varchar](10) NULL,\n    [AgencyName] [varchar](50) NULL\n) \nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "udacityproject4pool",
+				"poolName": "udacityproject4pool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

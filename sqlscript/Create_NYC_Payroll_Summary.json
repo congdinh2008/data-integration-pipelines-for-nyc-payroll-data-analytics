@@ -1,0 +1,17 @@
+{
+	"name": "Create_NYC_Payroll_Summary",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[NYC_Payroll_Summary](\n    [FiscalYear] [int] NULL,\n    [AgencyName] [varchar](50) NULL,\n    [TotalPaid] [float] NULL\n)",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "udacityproject4pool",
+				"poolName": "udacityproject4pool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

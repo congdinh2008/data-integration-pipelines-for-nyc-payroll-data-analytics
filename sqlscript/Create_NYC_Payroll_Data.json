@@ -1,0 +1,17 @@
+{
+	"name": "Create_NYC_Payroll_Data",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[NYC_Payroll_Data](\n    [FiscalYear] [int] NULL,\n    [PayrollNumber] [int] NULL,\n    [AgencyID] [varchar](10) NULL,\n    [AgencyName] [varchar](50) NULL,\n    [EmployeeID] [varchar](10) NULL,\n    [LastName] [varchar](20) NULL,\n    [FirstName] [varchar](20) NULL,\n    [AgencyStartDate] [date] NULL,\n    [WorkLocationBorough] [varchar](50) NULL,\n    [TitleCode] [varchar](10) NULL,\n    [TitleDescription] [varchar](100) NULL,\n    [LeaveStatusasofJune30] [varchar](50) NULL,\n    [BaseSalary] [float] NULL,\n    [PayBasis] [varchar](50) NULL,\n    [RegularHours] [float] NULL,\n    [RegularGrossPaid] [float] NULL,\n    [OTHours] [float] NULL,\n    [TotalOTPaid] [float] NULL,\n    [TotalOtherPay] [float] NULL\n) \nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "udacityproject4pool",
+				"poolName": "udacityproject4pool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
