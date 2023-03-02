@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "udacityproject4"
+		},
+		"ls_AzureDataLakeStorage_accountKey": {
+			"value": ""
+		},
+		"ls_AzureSqlDatabase_connectionString": {
+			"value": ""
+		},
+		"ls_AzureSynapseAnalytics_connectionString": {
+			"value": ""
+		},
+		"ls_AzureDataLakeStorage_properties_typeProperties_url": {
+			"value": "https://adlsnycpayrollcong.dfs.core.windows.net/"
+		}
+	}
+}

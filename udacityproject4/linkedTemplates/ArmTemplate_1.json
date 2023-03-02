@@ -1,0 +1,307 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "udacityproject4"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_AggregateData')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow Aggregate Data",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_DataflowAggregateData",
+								"type": "DataFlowReference",
+								"parameters": {
+									"fiscalYear": {
+										"value": "@pipeline().parameters.pipeline_param_ficalYear",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"sqlNYCPayrollData": {},
+									"dsFileHistoricalNYCPayroll2020": {},
+									"sinkDataToSynNYCPayrollSummary": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "ls_AzureDataLakeStorage",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "udacityproject4/dirstaging"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"pipeline_param_ficalYear": {
+						"type": "int",
+						"defaultValue": 2020
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-02T03:49:17Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_loadDataToSynapse')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Load Employee into Synapse",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_loadFileEmpMasterToSynTables",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"loadFileEmpMasterToSynTables": {},
+									"sinkEmpDataToSynTable": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "ls_AzureDataLakeStorage",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "udacityproject4/dirstaging"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Load Agency into Synapse",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Load Employee into Synapse",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_loadFileAgencyMasterToSynTables",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"loadFileAgencyMasterToSynTables": {},
+									"sinkAgencyDataToSynTable": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "ls_AzureDataLakeStorage",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "udacityproject4/dirstaging"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Load Title into Synapse",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Load Agency into Synapse",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_loadFileTitleMasterToSynTables",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"loadFileTitleMasterToSynTables": {},
+									"sinkTitleMasterDataToSynTable": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "ls_AzureDataLakeStorage",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "udacityproject4/dirstaging"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Load 2021 Payroll Data into Synapse",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Load Title into Synapse",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_loadNYCPayroll2021ToSynTables",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"loadNYCPayroll2021ToSynTables": {},
+									"sink2021PayrollDataToSynTable": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "ls_AzureDataLakeStorage",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "udacityproject4/dirstaging"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-02T03:41:09Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_load2021PayrollDataintoSQLDb')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Load NYC Payroll 2021 CSV into SQL Db",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_loadFileNYCPayroll2021ToSqlDb",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourceFileNYCPayroll2021": {},
+									"sinkSqlDbNYCPayroll2021File": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-02T03:30:59Z"
+			},
+			"dependsOn": []
+		}
+	]
+}
