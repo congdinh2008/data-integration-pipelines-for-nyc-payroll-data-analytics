@@ -1,0 +1,57 @@
+{
+	"name": "df_loadFileEmpMasterToSynTables",
+	"properties": {
+		"folder": {
+			"name": "Azure Data Lake Gen 2"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_DelimitedText_EmpMaster",
+						"type": "DatasetReference"
+					},
+					"name": "loadFileEmpMasterToSynTables"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_syn_NYC_Payroll_EMP_MD",
+						"type": "DatasetReference"
+					},
+					"name": "sinkEmpDataToSynTable"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          EmployeeID as string,",
+				"          LastName as string,",
+				"          FirstName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> loadFileEmpMasterToSynTables",
+				"loadFileEmpMasterToSynTables sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          EmployeeID as string,",
+				"          LastName as string,",
+				"          FirstName as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkEmpDataToSynTable"
+			]
+		}
+	}
+}

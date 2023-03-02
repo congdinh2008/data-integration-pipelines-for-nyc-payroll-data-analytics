@@ -1,0 +1,125 @@
+{
+	"name": "df_DataflowAggregateData",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_AzureSqlTable_NYC_Payroll_Data",
+						"type": "DatasetReference"
+					},
+					"name": "sqlNYCPayrollData"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DelimitedText_historical_nycpayroll",
+						"type": "DatasetReference"
+					},
+					"name": "dsFileHistoricalNYCPayroll2020"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "table_synapse_nycpayroll_summary",
+						"type": "DatasetReference"
+					},
+					"name": "sinkDataToSynNYCPayrollSummary"
+				}
+			],
+			"transformations": [
+				{
+					"name": "unionNYCPayrollData2020and2021"
+				},
+				{
+					"name": "filterByFiscalYear"
+				},
+				{
+					"name": "derivedTotalPaidColumn"
+				},
+				{
+					"name": "aggregateGroupByAgencyAndFiscalYear"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     fiscalYear as integer (2020)",
+				"}",
+				"source(output(",
+				"          FiscalYear as integer,",
+				"          PayrollNumber as integer,",
+				"          AgencyID as string,",
+				"          AgencyName as string,",
+				"          EmployeeID as string,",
+				"          LastName as string,",
+				"          FirstName as string,",
+				"          AgencyStartDate as date,",
+				"          WorkLocationBorough as string,",
+				"          TitleCode as string,",
+				"          TitleDescription as string,",
+				"          LeaveStatusasofJune30 as string,",
+				"          BaseSalary as double,",
+				"          PayBasis as string,",
+				"          RegularHours as double,",
+				"          RegularGrossPaid as double,",
+				"          OTHours as double,",
+				"          TotalOTPaid as double,",
+				"          TotalOtherPay as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sqlNYCPayrollData",
+				"source(output(",
+				"          FiscalYear as integer,",
+				"          PayrollNumber as integer,",
+				"          AgencyID as string,",
+				"          AgencyName as string,",
+				"          EmployeeID as string,",
+				"          LastName as string,",
+				"          FirstName as string,",
+				"          AgencyStartDate as date,",
+				"          WorkLocationBorough as string,",
+				"          TitleCode as string,",
+				"          TitleDescription as string,",
+				"          LeaveStatusasofJune30 as string,",
+				"          BaseSalary as integer,",
+				"          PayBasis as string,",
+				"          RegularHours as float,",
+				"          RegularGrossPaid as float,",
+				"          OTHours as float,",
+				"          TotalOTPaid as float,",
+				"          TotalOtherPay as float",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> dsFileHistoricalNYCPayroll2020",
+				"sqlNYCPayrollData, dsFileHistoricalNYCPayroll2020 union(byName: true)~> unionNYCPayrollData2020and2021",
+				"unionNYCPayrollData2020and2021 filter(toInteger(FiscalYear) >= $fiscalYear) ~> filterByFiscalYear",
+				"filterByFiscalYear derive(TotalPaid = RegularGrossPaid + TotalOTPaid + TotalOtherPay) ~> derivedTotalPaidColumn",
+				"derivedTotalPaidColumn aggregate(groupBy(FiscalYear,",
+				"          AgencyName),",
+				"     TotalPaid = sum(TotalPaid)) ~> aggregateGroupByAgencyAndFiscalYear",
+				"aggregateGroupByAgencyAndFiscalYear sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          FiscalYear as integer,",
+				"          AgencyName as string,",
+				"          TotalPaid as double",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkDataToSynNYCPayrollSummary"
+			]
+		}
+	}
+}

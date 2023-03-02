@@ -1,0 +1,55 @@
+{
+	"name": "df_loadFileAgencyMasterToSynTables",
+	"properties": {
+		"folder": {
+			"name": "Azure Data Lake Gen 2"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_DelimitedText_AgencyMaster",
+						"type": "DatasetReference"
+					},
+					"name": "loadFileAgencyMasterToSynTables"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_syn_NYC_Payroll_AGENCY_MD",
+						"type": "DatasetReference"
+					},
+					"name": "sinkAgencyDataToSynTable"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          AgencyID as string,",
+				"          AgencyName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> loadFileAgencyMasterToSynTables",
+				"loadFileAgencyMasterToSynTables sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          AgencyID as string,",
+				"          AgencyName as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkAgencyDataToSynTable"
+			]
+		}
+	}
+}

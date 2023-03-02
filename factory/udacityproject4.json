@@ -1,0 +1,9 @@
+{
+	"name": "udacityproject4",
+	"location": "southeastasia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "abfb4a66-602a-476d-a286-cde0ddf3824e",
+		"tenantId": "9b7cbd77-6d6b-4879-8aba-63d7dfb18472"
+	}
+}
